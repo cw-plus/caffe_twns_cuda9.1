@@ -118,7 +118,7 @@ void Blob<Dtype>::set_delta(){
   //Dtype delta = (Dtype) scale_factor * this->asum_data() / this->count();
    
   // 这里 TERNARY_DELTA 替代了量化位宽 bitwidth
-  delta = TERNARY_DELTA;
+  Dtype delta = (Dtype)TERNARY_DELTA;
   //delta = (delta <= 100) ? delta : 100;
   //delta = (delta >= -100) ? delta : -100; 
   delta = (delta <= 32) ? delta : 32;

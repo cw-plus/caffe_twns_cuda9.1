@@ -26,4 +26,6 @@ bool choose(std::string option_name){
  extern bool SCALE_WEIGHTS = false;
  extern bool BINARY = false;
  extern bool TERNARY = false;
- extern int TERNARY_DELTA = 7;
+
+ // 在这里设置 位宽 bitwidth
+ extern int TERNARY_DELTA = 2;

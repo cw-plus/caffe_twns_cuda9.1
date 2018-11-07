@@ -301,7 +301,7 @@ template<>
 void caffe_cpu_ternary<unsigned>(const int N, const unsigned delta, const unsigned* X, unsigned* Y){
 // NOT IMPLEMENTED
 }
-
+/*
 template<>
 void caffe_cpu_ternary<float>(const int N, const float delta, const float* X, float* Y){
 	for(int i=0; i<N; i++){
@@ -316,8 +316,26 @@ void caffe_cpu_ternary<double>(const int N, const double delta, const double* X,
 		double x = X[i];
 		Y[i] = (x>delta) - (x<-delta);
 	}
+}*/
+template<>
+void caffe_cpu_ternary<float>(const int N, const float delta, const float* X, float* Y){
+	for(int i=0; i<N; i++){  //
+        caffe_clip(N, X);
+  // void caffe_clip<double>(const int n, double* y)
+		float x = X[i];
+		Y[i] = round((exp2(float(delta))-1.0)*x)/(exp2(float(delta))-1.0);
+	}
 }
 
+template<>
+void caffe_cpu_ternary<double>(const int N, const double delta, const double* X, double* Y){
+	for(int i=0; i<N; i++){  //
+        caffe_clip(N, X);
+  // void caffe_clip<double>(const int n, double* y)
+		double x = X[i];
+		Y[i] = round((exp2(double(delta))-1.0)*x)/(exp2(double(delta))-1.0);
+	}
+}
 
 ///*## 我写的量化公式 start ---- ####################################################################*/
 ///*

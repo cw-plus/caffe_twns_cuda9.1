@@ -494,13 +494,22 @@ void caffe_gpu_clip<unsigned int>(const int N, unsigned int* X) {
 // NOT IMPLEMENT
 }
 
-template <typename Dtype>
+/*template <typename Dtype>
 __global__ void ternary_kernel(const int n, const Dtype delta, const Dtype* X, Dtype* Y) {
   CUDA_KERNEL_LOOP(index, n) {
 	const Dtype a = X[index];
     Y[index] = (a>delta) - (a<-delta);
   }
 }
+*/
+template <typename Dtype>
+__global__ void ternary_kernel(const int n, const Dtype delta, const Dtype* X, Dtype* Y) {
+  CUDA_KERNEL_LOOP(index, n) {
+  const Dtype x = (X[index]>1) - (X[index]<-1) + X[index] * (X[index]<=1 && X[index]>=-1);
+  Y[index] = round((exp2(float(delta))-1.0)*x)/(exp2(float(delta))-1.0);      
+  }
+}
+
 
 template <>
 void caffe_gpu_ternary<int>(const int N, const int delta, const int* X, int* Y) {

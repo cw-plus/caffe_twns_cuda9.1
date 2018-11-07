@@ -113,10 +113,16 @@ void Blob<Dtype>::binarize_data(const Dtype bounds){
 // revised 2016-4-14
 template <typename Dtype>
 void Blob<Dtype>::set_delta(){
-  float scale_factor = TERNARY_DELTA * 1.0 / 10;  //  extern int TERNARY_DELTA = 7;
-  Dtype delta = (Dtype) scale_factor * this->asum_data() / this->count();
-  delta = (delta <= 100) ? delta : 100;
-  delta = (delta >= -100) ? delta : -100; 
+  //float scale_factor = TERNARY_DELTA * 1.0 / 10;  //  extern int TERNARY_DELTA = 7;
+ 
+  //Dtype delta = (Dtype) scale_factor * this->asum_data() / this->count();
+   
+  // 这里 TERNARY_DELTA 替代了量化位宽 bitwidth
+  delta = TERNARY_DELTA;
+  //delta = (delta <= 100) ? delta : 100;
+  //delta = (delta >= -100) ? delta : -100; 
+  delta = (delta <= 32) ? delta : 32;
+  delta = (delta >= -32) ? delta : -32; 
   this->delta_ = delta;
   /*
   delta = 0.7*∑(|w|)/n
@@ -125,8 +131,10 @@ void Blob<Dtype>::set_delta(){
 
 template <typename Dtype>
 void Blob<Dtype>::set_delta(Dtype delta){
-  delta = (delta <= 100) ? delta : 100;
-  delta = (delta >= -100) ? delta : -100;
+  //delta = (delta <= 100) ? delta : 100;
+  //delta = (delta >= -100) ? delta : -100; 
+  delta = (delta <= 32) ? delta : 32;
+  delta = (delta >= -32) ? delta : -32; 
   this->delta_ = delta;
 }
 
@@ -176,7 +184,7 @@ if(phase == RUN){
   switch (data_->head()) {
   case SyncedMemory::HEAD_AT_CPU:
 {
-    // 我的理解: 把cpu_data() 三值化后放到 mutable_cpu_binary() 里
+  /*  // 我的理解: 把cpu_data() 三值化后放到 mutable_cpu_binary() 里
 	caffe_cpu_ternary<Dtype>(this->count(), delta, this->cpu_data(), this->mutable_cpu_binary());
     
 	// caffe_cpu_dot() 功能： 返回 vector X 和 vector Y 的内积。 α=∑|Wi|/IΔ (i∈IΔ)
@@ -186,13 +194,17 @@ if(phase == RUN){
 	alpha /= caffe_cpu_dot(this->count(), this->cpu_binary(), this->cpu_binary());
 	caffe_cpu_scale(this->count(), alpha, this->cpu_binary(), this->mutable_cpu_binary());
 	// this->set_alpha(alpha);
+  */
+  // delta 代表 位宽 bitwidth
+	caffe_cpu_ternary<Dtype>(this->count(), delta, this->cpu_data(), this->mutable_cpu_binary());
+    
 }
     return;
   case SyncedMemory::HEAD_AT_GPU:
   case SyncedMemory::SYNCED:
 #ifndef CPU_ONLY
 {
-    caffe_gpu_ternary<Dtype>(this->count(), delta, this->gpu_data(), this->mutable_gpu_binary());
+  /*  caffe_gpu_ternary<Dtype>(this->count(), delta, this->gpu_data(), this->mutable_gpu_binary());
 	Dtype* pa = new Dtype(0);
 	caffe_gpu_dot(this->count(), this->gpu_binary(), this->gpu_data(), pa);
 	Dtype* pb = new Dtype(0);
@@ -206,6 +218,10 @@ if(phase == RUN){
 
     // LOG(INFO) << "alpha = " << alpha;
 	// caffe_sleep(3);
+  */
+////////////////////////////////////
+ caffe_gpu_ternary<Dtype>(this->count(), delta, this->gpu_data(), this->mutable_gpu_binary());
+	
 }
     return;
 #else

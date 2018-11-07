@@ -1,3 +1,19 @@
+# Ternary Weight Networks (TWNs)
+
+This repository reimplements [Ternary Weight Networks (TWNs)](https://github.com/fengfu-chris/caffe-twns) using cuda 9.1 and commit code.
+ 
+
+two brach: master and multi_bit_quantization
+
+follow those command to check out it
+
+```
+git branch
+
+git checkout multi_bit_quantization
+```
+
+
 # Caffe
 
 [![Build Status](https://travis-ci.org/BVLC/caffe.svg?branch=master)](https://travis-ci.org/BVLC/caffe)
